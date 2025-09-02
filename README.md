@@ -51,8 +51,8 @@ proyecto-planIMRT/
 
 Total de CIs: 6
 
-- Documentación:  3 CIs
-- Diseño: 3 CIs
+- Documentación:  2 CIs
+- Diseño: 4 CIs
 
 ## Última actualización
 
