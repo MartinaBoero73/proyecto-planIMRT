@@ -24,27 +24,32 @@ En la Radioterapia de Intensidad Modulada (IMRT) hay una alta cantidad de campos
 ```plaintext
 proyecto-planIMRT/
 │
-├── codigo/                             # Implementación del proyecto
-│   └── modulos/                        # Scripts y componentes reutilizables
-|
-├── diseño/                             # Material de diseño y modelado del sistema
-│   ├── arquitectura/                   # Documentos y descripciones de la arquitectura
-│   └── diagramas/                      # Diagramas UML y de contexto
-│       ├── casos_de_uso.png            # Diagrama de casos de uso
-│       ├── diagrama_de_dominio.png     # Modelo de dominio
-│       ├── diagrama_de_contexto_N0.png # Contexto de alto nivel (nivel 0)
-│       └── diagrama_de_contexto_N1.png # Contexto detallado (nivel 1)
+├── planIMRT/                           # Implementación principal del sistema (aplicación Spring Boot)
+│   └── src/
+|       ├── main/
+|       |   ├── java/com.planimrt/
+|       |   |   ├── PlanImrtApplication.java    # Aplicacion principal del proyecto
+|       |   |   ├── controllers/                # Controladores REST para manejo de peticiones
+|       |   |   ├── DTOs/                       # Objetos de transferencia de datos entre capas 
+|       |   |   ├── forms/                      # Clases para manejar formularios o requests del usuario 
+|       |   |   ├── model/                      # Entidades del dominio 
+|       |   |   ├── repo/                       # Interfaces de repositorio para acceso a la base de datos
+|       |   |   ├── security/                   # Configuración de autenticación/autorización 
+|       |   |   └── services/                   # Lógica de negocio
+|       |   |
+|       |   └── resources/
+|       |       ├── templates/            # Vistas HTML 
+|       |       └── static/               # Archivos estáticoservidos directamente
+|       |
+|       └── test/                        # Tests unitarios e integrados del proyecto 
 |
 ├── documentacion/                      # Documentación formal del proyecto
-│   ├── especificaciones/               # Especificaciones técnicas y funcionales
-│   └── requerimientos/                 # Requerimientos del sistema
-│       ├── casos_de_uso.xlsx           # Lista de casos de uso en formato tabular
-│       └── escenarios_de_calidad.xlsx  # Escenarios de atributos de calidad
-|
-└── recursos/                           # Archivos auxiliares y de soporte
-    ├── imagenes/                       # Imágenes varias para documentación y diseño
-    └── plantillas/                     # Plantillas para interfaz web
-
+    ├── especificaciones/               # Especificaciones técnicas y funcionales
+    └── requerimientos/                 # Requerimientos del sistema
+        ├── casos_de_uso.xlsx           # Lista de casos de uso en formato tabular
+        └── escenarios_de_calidad.xlsx  # Escenarios de atributos de calidad
+ 
+ 
 ```
 
 ## Elementos de Configuración
