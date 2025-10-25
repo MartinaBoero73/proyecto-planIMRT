@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8"/>
+    <title>Subir DICOM</title>
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="card">
+    <h2>Subir archivo DICOM</h2>
+
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" action="/upload">
+        <div class="dropzone" id="dropzone">
+            Arrastrá y soltá tu archivo DICOM<br/>
+            <small>o hacé clic para seleccionarlo</small>
+            <input type="file" name="file" id="fileInput" style="display:none" accept=".dcm"/>
+        </div>
+        <br/>
+        <button type="submit">Subir archivo</button>
+    </form>
+</div>
+
+<script>
+    const dz = document.getElementById('dropzone');
+    const fi = document.getElementById('fileInput');
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('dragover', e => {
+        e.preventDefault();
+        dz.classList.add('dragover');
+    });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        fi.files = e.dataTransfer.files;
+    });
+</script>
+</body>
+</html>

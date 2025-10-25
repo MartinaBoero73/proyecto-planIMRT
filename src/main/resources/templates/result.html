@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Resultado</title>
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="card">
+    <h2>Resultado del procesamiento</h2>
+
+    <p>Status: <b th:text="${status}"></b></p>
+    <p>MCS Index: <b th:text="${mcsIndex}"></b></p>
+
+    <div th:if="${errors}">
+        <h3>Errores / Advertencias</h3>
+        <ul>
+            <li th:each="err : ${errors}" th:text="${err}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${plotData}">
+        <h3>Gráfico del colimador</h3>
+        <img th:src="${plotData}" alt="plot"/>
+    </div>
+
+    <p><a href="/upload" class="button">Procesar otro archivo</a></p>
+</div>
+</body>
+</html>
