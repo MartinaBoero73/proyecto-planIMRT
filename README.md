@@ -24,6 +24,26 @@ En la Radioterapia de Intensidad Modulada (IMRT) hay una alta cantidad de campos
 ```plaintext
 proyecto-planIMRT/
 │
+├── planIMRT/                # Implementación principal del sistema (aplicación Spring Boot)
+│   └── src/
+|       ├── main/
+|       |   ├── java/com.planimrt/
+|       |   |   ├── PlanImrtApplication.java # Aplicacion principal del proyecto
+|       |   |   ├── controllers/             # Controladores REST para manejo de peticiones
+|       |   |   ├── DTOs/                    # Objetos de transferencia de datos entre capas 
+|       |   |   ├── forms/                   # Clases para formularios o requests del usuario 
+|       |   |   ├── model/                   # Entidades del dominio 
+|       |   |   ├── repo/                    # Interfaces de repositorio para acceso a la BD
+|       |   |   ├── security/                # Configuración de autenticación/autorización 
+|       |   |   └── services/                # Lógica de negocio
+|       |   |
+|       |   └── resources/
+|       |       ├── templates/               # Vistas HTML 
+|       |       └── static/                  # Archivos estáticoservidos directamente
+|       |
+|       └── test/                            # Tests unitarios e integrados del proyecto
+|
+| 
 ├── codigo/                              # Implementación del proyecto
 │   └── modulos/                         # Scripts y componentes reutilizables
 |
