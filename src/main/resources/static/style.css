@@ -92,3 +92,43 @@ li {
 p {
     line-height: 1.5;
 }
+
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 250px;
+}
+
+.btn {
+    display: block;
+    background-color: #3c8dbc;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+    background-color: #367fa9;
+    transform: scale(1.02);
+}
+
+.logout {
+    margin-top: 40px;
+    font-size: 0.9em;
+}
+
+.logout a {
+    color: #888;
+    text-decoration: none;
+}
+
+.logout a:hover {
+    text-decoration: underline;
+}
