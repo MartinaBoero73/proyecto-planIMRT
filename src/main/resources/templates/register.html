@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Usuario - Plan IMRT</title>
+    <style>
+        body { font-family: sans-serif; max-width: 400px; margin: 50px auto; }
+        input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
+        .error { color: #570000; font-size: 0.9em; }
+        .success { color: #004300; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<h2>Crear cuenta</h2>
+
+<form th:action="@{/register}" th:object="${userForm}" method="post">
+
+    <label>Usuario:</label>
+    <input type="text" th:field="*{username}" placeholder="Nombre de usuario"/>
+    <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error"></div>
+
+    <label>Contraseña:</label>
+    <input type="password" th:field="*{password}" placeholder="Contraseña"/>
+    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
+
+    <label>Repetir contraseña:</label>
+    <input type="password" th:field="*{passwordConfirm}" placeholder="Repetir contraseña"/>
+    <div th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="error"></div>
+
+    <label>Rol:</label>
+    <select th:field="*{role}">
+        <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+    </select>
+
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+
+    <button type="submit">Registrar</button>
+</form>
+
+<p>¿Ya tenés cuenta? <a th:href="@{/login}">Iniciar sesión</a></p>
+
+</body>
+</html>

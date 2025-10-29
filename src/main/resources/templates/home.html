@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio - Plan IMRT</title>
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>Bienvenido, <span th:text="${username}">Usuario</span></h1>
+
+<div class="button-container">
+    <a th:href="@{/patients}" class="btn">Consultar datos de mis pacientes</a>
+    <a th:href="@{/upload}" class="btn">Generar nuevo plan</a>
+    <a th:href="@{/profile}" class="btn">Ver mis datos</a>
+</div>
+
+<div class="logout">
+    <a th:href="@{/logout}">Cerrar sesión</a>
+</div>
+
+</body>
+</html>
