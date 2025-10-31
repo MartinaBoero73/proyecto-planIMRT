@@ -97,6 +97,7 @@ public class ProcessingOrchestrator {
                     .collimatorPlot(plot)
                     .status(status)
                     .errors(errors)
+                    .beams(dicomFileDTO.getBeams())
                     .build();
 
         } catch (Exception e) {
