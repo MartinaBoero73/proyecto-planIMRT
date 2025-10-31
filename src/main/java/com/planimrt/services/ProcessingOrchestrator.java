@@ -22,6 +22,7 @@ import java.util.Map;
 public class ProcessingOrchestrator {
 
     private final DicomFileService dicomFileService;
+    private final DicomReaderService dicomReaderService;
     private final McsCalculatorService mcsCalculator;
     private final CollimatorPlotterService plotter;
 
@@ -35,7 +36,13 @@ public class ProcessingOrchestrator {
             // 0. Valida que el archivo existe
             validateFilePath(dicomPath);
 
-            // 1. Procesar y guardar archivo DICOM en BD
+            // CAMBIO: Leer DICOM completo con beams ANTES de guardarlo
+            DicomFileDTO dicomFileDTO = dicomReaderService.readDicomFileAsDTO(dicomPath);
+            log.info("DICOM leído: PatientID={}, Beams={}",
+                    dicomFileDTO.getPatientId(),
+                    dicomFileDTO.getBeams() != null ? dicomFileDTO.getBeams().size() : 0);
+
+            // Guardar en BD (solo metadatos básicos)
             DicomFile dicomFile = dicomFileService.processFromPath(dicomPath, responsibleUserId);
             log.info("Archivo DICOM procesado y guardado. ID: {}, PatientID: {}, Archivo: {}",
                     dicomFile.getId(),
@@ -47,15 +54,15 @@ public class ProcessingOrchestrator {
 
             // 3. Detecta inconsistencias en los metadatos
             List<String> errors = detectInconsistencies(dicomFile, metadata);
+
             if (!errors.isEmpty()) {
                 log.warn("Se detectaron {} inconsistencias en el archivo", errors.size());
                 errors.forEach(error -> log.warn("  - {}", error));
             }
 
-            // 4. Calcular MCS
+            // CAMBIO: Usar el DTO con beams (no el de BD)
             double mcs = 0.0;
             try {
-                DicomFileDTO dicomFileDTO = dicomFile.toDTO();
                 mcs = mcsCalculator.calculateMcs(dicomFileDTO);
                 log.info("MCS calculado: {}", mcs);
             } catch (Exception e) {
