@@ -59,14 +59,13 @@ public class ProcessingController {
             }
 
             Path path = storageService.resolve(storedFilename);
-
             ProcessingResult result = orchestrator.processPlan(path.toString(), responsibleUserId);
 
             model.addAttribute("status", result.getStatus().name());
             model.addAttribute("mcsIndex", result.getMcsIndex());
             model.addAttribute("errors", result.getErrors());
+            model.addAttribute("beams", result.getBeams());
 
-            // Convertir BufferedImage -> base64 para incrustar en <img>
             if (result.getCollimatorPlot() != null) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(result.getCollimatorPlot(), "png", baos);
@@ -82,4 +81,3 @@ public class ProcessingController {
         }
     }
 }
-

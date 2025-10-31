@@ -132,3 +132,146 @@ p {
 .logout a:hover {
     text-decoration: underline;
 }
+
+/* Layout de dos columnas para resultados */
+.result-container {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 30px;
+    max-width: 1400px;
+    width: 100%;
+}
+
+.result-card {
+    background: var(--card);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.beams-sidebar {
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.beams-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.beams-table th, .beams-table td {
+    border: 1px solid var(--border);
+    padding: 10px 8px;
+    text-align: left;
+}
+
+.beams-table th {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.beams-table td {
+    font-size: 13px;
+}
+
+.beams-table tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.beams-table tr:hover {
+    background-color: #e0f2fe;
+}
+
+.beams-table tfoot {
+    font-weight: 600;
+    background-color: #f1f5f9;
+}
+
+.beams-table tfoot th {
+    background-color: #64748b;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.status-SUCCESS {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-PARTIAL {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-FAILED {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.metric-box {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.metric-box h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.metric-box .value {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .result-container {
+        grid-template-columns: 1fr;
+    }
+
+    .beams-sidebar {
+        max-height: 400px;
+    }
+}
+
+/* Scrollbar personalizado para tabla de beams */
+.beams-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.beams-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.beams-sidebar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.beams-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
