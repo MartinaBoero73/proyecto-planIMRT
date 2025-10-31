@@ -1,5 +1,6 @@
 package com.planimrt.model;
 
+import com.planimrt.DTOs.BeamDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,4 +15,5 @@ public class ProcessingResult {
     private BufferedImage collimatorPlot;
     private ProcessingStatus status;
     private List<String> errors;
+    private List<BeamDTO> beams;
 }

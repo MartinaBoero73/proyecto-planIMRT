@@ -1,30 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Resultado</title>
-    <link href="/style.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet" />
 </head>
 <body>
-<div class="card">
-    <h2>Resultado del procesamiento</h2>
 
-    <p>Status: <b th:text="${status}"></b></p>
-    <p>MCS Index: <b th:text="${mcsIndex}"></b></p>
+<div class="result-container">
 
-    <div th:if="${errors}">
-        <h3>Errores / Advertencias</h3>
-        <ul>
-            <li th:each="err : ${errors}" th:text="${err}"></li>
-        </ul>
+    <div class="result-card beams-sidebar">
+        <div th:if="${beams != null and !beams.isEmpty()}">
+            <h2>Beams del Plan</h2>
+            <table class="beams-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>MU</th>
+                    <th>Seg.</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="beam, iterStat : ${beams}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${beam.beamName}"></td>
+                    <td th:text="${#numbers.formatDecimal(beam.beamMU, 1, 1)}"></td>
+                    <td th:text="${beam.segments != null ? beam.segments.size() : 0}"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="2">Total</th>
+                    <th th:text="${#numbers.formatDecimal(#aggregates.sum(beams.![beamMU]), 1, 1)}"></th>
+                    <th th:text="${#aggregates.sum(beams.![segments.size()])}"></th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div style="width: 100%; max-width: 1400px; margin-top: 20px;">
+            <a href="/upload" class="button"
+               style="font-size: 16px; padding: 14px 28px; display: inline-flex; align-items: center; gap: 8px;">
+                Procesar otro archivo
+            </a>
+        </div>
     </div>
 
-    <div th:if="${plotData}">
-        <h3>Gráfico del colimador</h3>
-        <img th:src="${plotData}" alt="plot"/>
-    </div>
+    <div class="main-content">
 
-    <p><a href="/upload" class="button">Procesar otro archivo</a></p>
+        <div class="result-card">
+            <h2 style="margin-top: 0;">Resultado del Procesamiento</h2>
+            <p>
+                Estado:
+                <span class="status-badge"
+                      th:classappend="${'status-' + status}"
+                      th:text="${status}"></span>
+            </p>
+
+            <div class="metric-box">
+                <h3>MCS Index</h3>
+                <p class="value" th:text="${#numbers.formatDecimal(mcsIndex, 1, 4)}"></p>
+            </div>
+        </div>
+
+        <div class="result-card" th:if="${errors != null and !errors.isEmpty()}">
+            <h3 style="color: var(--error); margin-top: 0;">Errores / Advertencias</h3>
+            <ul>
+                <li th:each="err : ${errors}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="result-card" th:if="${plotData}">
+            <h3 style="margin-top: 0;">Gráfico del Colimador</h3>
+            <img th:src="${plotData}" alt="plot" style="width: 100%; height: auto;" />
+        </div>
+
+    </div>
 </div>
+
 </body>
 </html>
