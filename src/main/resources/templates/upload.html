@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8">
     <title>Subir DICOM</title>
     <link href="/style.css" rel="stylesheet">
 </head>
@@ -9,35 +9,79 @@
 <div class="card">
     <h2>Subir archivo DICOM</h2>
 
-    <div th:if="${error}" class="error">
-        <p th:text="${error}"></p>
+    <div id="error" class="error" style="color:red;"></div>
+
+    <div class="dropzone" id="dropzone">
+        Arrastrá y soltá tu archivo DICOM<br/>
+        <small>o hacé clic para seleccionarlo</small>
+        <input type="file" id="fileInput" style="display:none" accept=".dcm"/>
     </div>
 
-    <form method="post" enctype="multipart/form-data" action="/upload">
-        <div class="dropzone" id="dropzone">
-            Arrastrá y soltá tu archivo DICOM<br/>
-            <small>o hacé clic para seleccionarlo</small>
-            <input type="file" name="file" id="fileInput" style="display:none" accept=".dcm"/>
-        </div>
-        <br/>
-        <button type="submit">Subir archivo</button>
-    </form>
+    <div id="fileInfo" style="margin-top:10px; display:none;">
+        <p>Archivo seleccionado: <span id="fileName"></span></p>
+        <button id="confirmBtn">Confirmar y procesar</button>
+    </div>
 </div>
 
 <script>
     const dz = document.getElementById('dropzone');
     const fi = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameSpan = document.getElementById('fileName');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const errorDiv = document.getElementById('error');
+
+    // Manejo dropzone
     dz.addEventListener('click', () => fi.click());
-    dz.addEventListener('dragover', e => {
-        e.preventDefault();
-        dz.classList.add('dragover');
-    });
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
     dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
     dz.addEventListener('drop', e => {
         e.preventDefault();
         dz.classList.remove('dragover');
         fi.files = e.dataTransfer.files;
+        mostrarArchivo();
+    });
+
+    // También al seleccionar con el input
+    fi.addEventListener('change', mostrarArchivo);
+
+    function mostrarArchivo() {
+        const file = fi.files[0];
+        if (!file) return;
+        fileNameSpan.textContent = file.name;
+        fileInfo.style.display = 'block';
+    }
+
+    // Confirmar y enviar
+    confirmBtn.addEventListener('click', async () => {
+        const file = fi.files[0];
+        if (!file) return alert("No hay archivo seleccionado.");
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            // Subida al servidor
+            const response = await fetch('/upload', { method: 'POST', body: formData });
+            if (!response.ok) throw new Error("Error subiendo el archivo");
+
+            const data = await response.json();
+            const storedFilename = data.storedFilename;
+
+            // Redirige a /process
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/process';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'storedFilename';
+            input.value = storedFilename;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+
+        } catch (err) {
+            errorDiv.textContent = err.message;
+        }
     });
 </script>
-</body>
-</html>

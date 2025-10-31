@@ -16,6 +16,8 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class ProcessingController {
@@ -34,19 +36,21 @@ public class ProcessingController {
         return "upload";
     }
 
-    // Recibe el archivo y lo guarda. Muestra la pag de confirmación.
     @PostMapping("/upload")
-    public String handleUpload(@RequestParam("file") MultipartFile file, Model model) throws Exception {
+    @ResponseBody // Importante: devuelve JSON en vez de una vista
+    public Map<String, String> handleUploadAjax(@RequestParam("file") MultipartFile file) throws Exception {
         if (file.isEmpty()) {
-            model.addAttribute("error", "Seleccioná un archivo DICOM para subir.");
-            return "upload";
+            throw new RuntimeException("Seleccioná un archivo DICOM para subir.");
         }
 
         String storedFilename = storageService.store(file.getBytes(), file.getOriginalFilename());
-        model.addAttribute("storedFilename", storedFilename);
-        model.addAttribute("originalName", file.getOriginalFilename());
-        return "confirm";
+
+        Map<String, String> response = new HashMap<>();
+        response.put("storedFilename", storedFilename);
+        response.put("originalName", file.getOriginalFilename());
+        return response;
     }
+
 
     // Procesa el archivo
     @PostMapping("/process")
