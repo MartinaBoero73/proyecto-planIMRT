@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,6 +25,83 @@ class MCSTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    @DisplayName("TP-CU08-01: Cálculo de MCS con archivo válido")
+    void testCalculoMCSConArchivoValido() throws Exception {
+        MockMultipartFile archivoDicom = new MockMultipartFile(
+                "file",
+                "valid_rtplan.dcm",
+                "application/dicom",
+                getClass().getResourceAsStream("/dicom/valid_rtplan.dcm")
+        );
+
+        long uploadStart = System.currentTimeMillis();
+        MvcResult uploadResult = mockMvc.perform(multipart("/upload")
+                        .file(archivoDicom))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.storedFilename").exists())
+                .andReturn();
+        long uploadTime = System.currentTimeMillis() - uploadStart;
+
+        String storedFilename = JsonPath.read(
+                uploadResult.getResponse().getContentAsString(),
+                "$.storedFilename");
+
+        // Medicion de tiempo
+        long processStart = System.currentTimeMillis();
+        MvcResult processResult = mockMvc.perform(post("/api/process")
+                        .param("storedFilename", storedFilename))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.mcs").exists())
+                .andReturn();
+        long processTime = System.currentTimeMillis() - processStart;
+        long totalTime = uploadTime + processTime;
+
+        // Extraer resultados
+        String jsonResponse = processResult.getResponse().getContentAsString();
+        Number mcsNumber = JsonPath.read(jsonResponse, "$.mcs");
+        double mcs = mcsNumber.doubleValue();
+        String status = JsonPath.read(jsonResponse, "$.status");
+
+        // Reporte
+        System.out.println("Archivo: valid_rtplan.dcm");
+        System.out.println("MCS calculado: " + String.format("%-23s", mcs));
+        System.out.println("Status: " + String.format("%-30s", status));
+        System.out.println("Tiempo de carga: " + String.format("%-20s", uploadTime + " ms") );
+        System.out.println("Tiempo de procesamiento: " + String.format("%-13s", processTime + " ms"));
+        System.out.println("Tiempo total: " + String.format("%-23s", totalTime + " ms"));
+
+        // Aserciones
+        assertAll("Verificaciones TP-CU08-01",
+                // Verificar que el MCS es válido
+                () -> assertNotNull(mcs, "El MCS no debería ser null"),
+                () -> assertTrue(mcs >= 0, "El MCS debe ser no negativo"),
+                () -> assertTrue(Double.isFinite(mcs), "El MCS debe ser un número finito"),
+
+                // Verificar status
+                () -> assertEquals("SUCCESS", status, "El procesamiento debe ser exitoso"),
+
+                // Verificar  tiempo de procesamiento (< 5 segundos)
+                () -> assertTrue(totalTime < 5000,
+                        String.format("El procesamiento completo debe tomar < 5s. Tiempo real: %.2f s",
+                                totalTime / 1000.0)),
+
+                // Verificar tiempo de procesamiento del cálculo específicamente
+                () -> assertTrue(processTime < 5000,
+                        String.format("El cálculo de MCS debe tomar < 5s. Tiempo real: %.2f s",
+                                processTime / 1000.0)),
+
+                // Verificar rango del MCS
+                () -> assertTrue(mcs < 1.0, "El MCS debe ser es menor a 1.0"),
+                () -> assertTrue(mcs > 0.0, "El MCS debe ser mayor a 0"),
+
+                // Verificar que el MCS de este archivo es el esperado
+                () -> assertEquals(0.000227, mcs, 0.000001, "El MCS debe ser aproximadamente 0.002")
+
+        );
+    }
 
     @Test
     @DisplayName("TP-CU08-02: Repetibilidad del cálculo - El mismo DICOM debe producir siempre el mismo MCS")
