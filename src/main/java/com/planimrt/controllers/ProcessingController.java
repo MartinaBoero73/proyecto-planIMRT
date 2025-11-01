@@ -84,4 +84,25 @@ public class ProcessingController {
             return "upload";
         }
     }
+
+    @PostMapping("/api/process")
+    @ResponseBody
+    public Map<String, Object> processFileApi(@RequestParam("storedFilename") String storedFilename) throws Exception {
+        Long responsibleUserId = 5L;
+
+        if (!storageService.exists(storedFilename)) {
+            throw new RuntimeException("Archivo no encontrado en el servidor.");
+        }
+
+        Path path = storageService.resolve(storedFilename);
+        ProcessingResult result = orchestrator.processPlan(path.toString(), responsibleUserId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", result.getStatus().name());
+        response.put("mcs", result.getMcsIndex());
+        response.put("errors", result.getErrors());
+        response.put("beamCount", result.getBeams() != null ? result.getBeams().size() : 0);
+
+        return response;
+    }
 }
