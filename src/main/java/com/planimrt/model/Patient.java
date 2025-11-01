@@ -34,7 +34,7 @@ public class Patient {
     private String sex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsible_user_id", nullable = false)
+    @JoinColumn(name = "responsible_user_id", nullable = true)
     private User responsibleUser;
 
     @CreationTimestamp
