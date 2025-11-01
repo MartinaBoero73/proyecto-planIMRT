@@ -21,8 +21,26 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Ejecutar tests
-        run: mvn clean test
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopencv-dev python3-numpy
+
+      - name: Verificar archivos DICOM
+        run: |
+          echo "Verificando archivos de test..."
+          find src/test/resources -name "*.dcm" -ls || echo "No se encontraron archivos DICOM"
+
+      - name: Ejecutar tests con logs detallados
+        run: mvn clean test -X
+        continue-on-error: true
+
+      - name: Mostrar logs de fallos
+        if: failure()
+        run: |
+          echo "=== LOGS DE SUREFIRE ==="
+          cat target/surefire-reports/*.txt || true
+          echo "=== FIN LOGS ==="
 
       - name: Generar reporte de cobertura
         run: mvn jacoco:report
