@@ -43,6 +43,10 @@ public class ProcessingController {
             throw new RuntimeException("Seleccioná un archivo DICOM para subir.");
         }
 
+        if (!file.getOriginalFilename().endsWith(".dcm")) {
+            throw new RuntimeException("El archivo no es un DICOM válido.");
+        }
+
         String storedFilename = storageService.store(file.getBytes(), file.getOriginalFilename());
 
         Map<String, String> response = new HashMap<>();
