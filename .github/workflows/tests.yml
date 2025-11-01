@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,26 +26,21 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Instalar dependencias del sistema
+      - name: Verificar archivos de test
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libopencv-dev python3-numpy
-
-      - name: Verificar archivos DICOM
-        run: |
-          echo "Verificando archivos de test..."
+          echo "Archivos DICOM de test:"
           find src/test/resources -name "*.dcm" -ls || echo "No se encontraron archivos DICOM"
 
-      - name: Ejecutar tests con logs detallados
-        run: mvn clean test -X
-        continue-on-error: true
+      - name: Ejecutar tests
+        run: mvn clean test -Dspring.profiles.active=test
+        env:
+          FILE_STORAGE_PATH: ${{ runner.temp }}/planimrt-test
 
-      - name: Mostrar logs de fallos
+      - name: Mostrar logs si falla
         if: failure()
         run: |
-          echo "=== LOGS DE SUREFIRE ==="
-          cat target/surefire-reports/*.txt || true
-          echo "=== FIN LOGS ==="
+          echo "=== LOGS DE TESTS FALLIDOS ==="
+          cat target/surefire-reports/*.txt 2>/dev/null || echo "No hay logs disponibles"
 
       - name: Generar reporte de cobertura
         run: mvn jacoco:report
@@ -53,3 +53,4 @@ jobs:
           name: Test Results
           path: target/surefire-reports/*.xml
           reporter: java-junit
+          fail-on-error: false
