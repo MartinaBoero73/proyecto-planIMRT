@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Confirmar archivo</title>
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="card">
+    <h2>Confirmar archivo</h2>
+    <p>Archivo subido: <b th:text="${originalName}">file.dcm</b></p>
+
+    <form method="post" action="/process">
+        <input type="hidden" name="storedFilename" th:value="${storedFilename}" />
+        <button type="submit">Procesar</button>
+    </form>
+
+    <p><a href="/upload" class="button" style="background:#94a3b8;">Volver</a></p>
+</div>
+</body>
+</html>

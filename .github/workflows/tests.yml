@@ -1,0 +1,74 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Verificar entorno
+        run: |
+          echo "=== Información del sistema ==="
+          java -version
+          mvn -version
+          echo ""
+          echo "=== Archivos DICOM de test ==="
+          find src/test/resources -name "*.dcm" -ls || echo "⚠ No se encontraron archivos DICOM"
+          echo ""
+          echo "=== Configuración de test ==="
+          cat src/test/resources/application-test.properties || echo "⚠ No hay application-test.properties"
+
+      - name: Ejecutar tests con logs detallados
+        run: mvn clean test -Dspring.profiles.active=test -e
+        env:
+          FILE_STORAGE_PATH: ${{ runner.temp }}/planimrt-test
+        continue-on-error: true
+
+      - name: Mostrar logs completos de tests fallidos
+        if: failure()
+        run: |
+          echo "=== LOGS COMPLETOS DE SUREFIRE ==="
+          for file in target/surefire-reports/*.txt; do
+            if [ -f "$file" ]; then
+              echo "--- $file ---"
+              cat "$file"
+              echo ""
+            fi
+          done
+          
+          echo "=== OUTPUT DE TESTS ==="
+          cat target/surefire-reports/*-output.txt 2>/dev/null || echo "No hay output files"
+
+      - name: Generar reporte de cobertura
+        run: mvn jacoco:report
+        if: always()
+
+      - name: Subir reportes como artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+          retention-days: 30
